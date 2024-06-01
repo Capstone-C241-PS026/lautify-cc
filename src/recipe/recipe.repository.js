@@ -1,21 +1,18 @@
-const axios = require("axios")
+const { recipeInstance } = require("../utils/instance")
 const { textTranslation } = require("../utils/translate")
 
 const findFishRecipes = async ({ recipeId, query }) => {
   const limit = 10
+
   if (recipeId) {
-    const { data: recipe } = await axios.get(`${process.env.RECIPE_BASE_URL}/recipes/${recipeId}/information`, {
-      params: {
-        apiKey: process.env.RECIPE_API_KEY
-      }
-    })
+    const { data: recipe } = await recipeInstance.get(`/recipes/${recipeId}/information`)
+    console.log(recipe)
     return recipe
   }
 
   const search = query ? `fish ${await textTranslation(query, 'id', 'en')}` : 'fish'
-  const { data: recipes } = await axios.get(`${process.env.RECIPE_BASE_URL}/recipes/complexSearch`, {
+  const { data: recipes } = await recipeInstance.get(`/recipes/complexSearch`, {
     params: {
-      apiKey: process.env.RECIPE_API_KEY,
       query: search,
       number: limit,
       addRecipeInformation: true
