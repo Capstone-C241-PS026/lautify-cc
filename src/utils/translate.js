@@ -1,7 +1,12 @@
-const { translate } = require('bing-translate-api');
+const translateText = require('free-google-translator-api');
 
 const textTranslation = async (text, from = 'en', to = 'id') => {
-  const { translation } = await translate(text, from, to)
-  return translation
-}
-module.exports = { textTranslation } 
+  try {
+    const translatedText = await translateText(text, from, to);
+    return translatedText;
+  } catch (error) {
+    throw new Error(`Translation failed: ${error.message}`);
+  }
+};
+
+module.exports = { textTranslation };
