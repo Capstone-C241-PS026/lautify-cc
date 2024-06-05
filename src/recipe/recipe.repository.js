@@ -1,3 +1,4 @@
+const { recipes } = require("../config/db")
 const { recipeInstance } = require("../utils/instance")
 const { textTranslation } = require("../utils/translate")
 
@@ -51,4 +52,21 @@ const showRecipeDetail = async (recipeId) => {
   return recipeDetail
 }
 
-module.exports = { findFishRecipes, showRecipes, showRecipeDetail }
+const addSaveRecipe = async (recipeData) => {
+  const response = await recipes.add(recipeData)
+  return response
+}
+
+const findAllSavedRecipe = async (uid) => {
+  const savedRecipesSnapshot = await recipes.where('uid', '==', uid).get()
+  const savedRecipes = savedRecipesSnapshot.docs.map(doc => ({ ...doc.data() }))
+  return savedRecipes
+}
+
+const findSavedRecipe = async (rid) => {
+  const savedRecipesSnapshot = await recipes.where('rid', '==', Number(rid)).get()
+  const savedRecipes = savedRecipesSnapshot.docs.map(doc => ({ ...doc.data() }))
+  return savedRecipes
+}
+
+module.exports = { findFishRecipes, showRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe }
