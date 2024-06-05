@@ -1,4 +1,5 @@
-const { showRecipes, findFishRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe } = require("./recipe.repository");
+const { getUserById } = require("../user/user.service");
+const { showRecipes, findFishRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe, removeSavedRecipe } = require("./recipe.repository");
 
 const getAllRecipe = async () => {
   const recipesData = await findFishRecipes({})
@@ -23,24 +24,31 @@ const getRecipesByQuery = async (query) => {
   return recipes
 }
 
-const saveRecipe = async (recipeData) => {
-  await addSaveRecipe(recipeData)
+const saveRecipe = async (uid, recipeData) => {
+  await getUserById(uid)
+  await addSaveRecipe(uid, recipeData)
   return { message: 'Recipe saved' }
 }
 
 const getAllRecipeSaved = async (uid) => {
+  await getUserById(uid)
   const savedRecipes = await findAllSavedRecipe(uid)
   return savedRecipes
 }
 
-const getSavedRecipeDetail = async (uid, rid) => {
-  await getAllRecipeSaved(uid)
-  const recipe = await findSavedRecipe(rid)
-  console.log(recipe)
-  if (!recipe[0]) {
+const getSavedRecipeById = async (uid, rid) => {
+  await getUserById(uid)
+  const recipe = await findSavedRecipe(uid, rid)
+  if (!recipe) {
     throw Error('Recipe not found')
   }
-  return recipe[0]
+  return recipe
 }
 
-module.exports = { getAllRecipe, getRecipeById, getRecipesByQuery, saveRecipe, getAllRecipeSaved, getSavedRecipeDetail }
+const deleteSavedRecipe = async (uid, rid) => {
+  await getUserById(uid)
+  await removeSavedRecipe(uid, rid)
+  return { message: 'Recipe deleted' }
+}
+
+module.exports = { getAllRecipe, getRecipeById, getRecipesByQuery, saveRecipe, getAllRecipeSaved, getSavedRecipeById, deleteSavedRecipe }

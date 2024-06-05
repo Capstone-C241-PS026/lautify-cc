@@ -1,4 +1,5 @@
 const { users } = require("../config/db")
+const { auth } = require("../config/firebase")
 
 const findAllUser = async () => {
   const allUser = (await users.get()).docs.map(doc => doc.data())
@@ -11,11 +12,11 @@ const findUserById = async (uid) => {
 }
 
 const insertUser = async (userData) => {
-  const response = await users.doc.add(userData)
-  return response
+  users.doc(userData.uid).set(userData)
 }
 
 const editUserById = async (uid, userData) => {
+  auth.updateUser(uid, { email: userData.email, displayName: userData.displayName })
   response = await users.doc(uid).update(userData)
   return response
 }

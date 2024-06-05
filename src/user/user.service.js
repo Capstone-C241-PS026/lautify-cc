@@ -21,8 +21,8 @@ const createUser = async (userData) => {
   if (!uid || !displayName || !username || !email) {
     throw Error('All fields must be filled')
   }
-  const response = await insertUser(userData)
-  return { message: 'User created', id: response.id }
+  await insertUser(userData)
+  return { message: 'User created' }
 }
 
 const updateUser = async (uid, userData) => {
@@ -32,7 +32,7 @@ const updateUser = async (uid, userData) => {
     throw Error('All fields must be filled')
   }
   await editUserById(uid, userData)
-  return { message: 'User updated', id: uid }
+  return { message: 'User updated' }
 }
 
 module.exports = { getAllUser, createUser, updateUser, getUserById }

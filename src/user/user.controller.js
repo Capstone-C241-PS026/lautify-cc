@@ -44,5 +44,4 @@ router.put('/:uid', async (req, res) => {
   }
 })
 
-
 module.exports = router

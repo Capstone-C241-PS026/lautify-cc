@@ -1,4 +1,4 @@
-const { recipes } = require("../config/db")
+const { users } = require("../config/db")
 const { recipeInstance } = require("../utils/instance")
 const { textTranslation } = require("../utils/translate")
 
@@ -11,7 +11,7 @@ const findFishRecipes = async ({ recipeId, query }) => {
     return recipe
   }
 
-  const search = query ? `fish ${await textTranslation(query, 'id', 'en')}` : 'fish'
+  const search = query ? `${await textTranslation(`ikan ${query}`, 'id', 'en')}` : 'fish'
   const { data: recipes } = await recipeInstance.get(`/recipes/complexSearch`, {
     params: {
       query: search,
@@ -26,7 +26,7 @@ const findFishRecipes = async ({ recipeId, query }) => {
 const showRecipes = async (recipesData) => {
   const promise = recipesData.map(async (recipe) => {
     return {
-      id: recipe.id,
+      rid: recipe.id,
       title: await textTranslation(recipe.title),
       readyInMinutes: recipe.readyInMinutes,
       types: await Promise.all(recipe.dishTypes.map(async (type) => await textTranslation(type))),
@@ -41,7 +41,7 @@ const showRecipes = async (recipesData) => {
 const showRecipeDetail = async (recipeId) => {
   const recipe = await findFishRecipes({ recipeId })
   const recipeDetail = {
-    id: recipe.id,
+    rid: recipe.id,
     title: await textTranslation(recipe.title),
     readyInMinutes: recipe.readyInMinutes,
     types: await Promise.all(recipe.dishTypes.map(async (type) => await textTranslation(type))),
@@ -52,21 +52,24 @@ const showRecipeDetail = async (recipeId) => {
   return recipeDetail
 }
 
-const addSaveRecipe = async (recipeData) => {
-  const response = await recipes.add(recipeData)
-  return response
+const addSaveRecipe = async (uid, recipeData) => {
+  await users.doc(uid).collection('savedRecipes').doc(String(recipeData.rid)).set(recipeData)
 }
 
 const findAllSavedRecipe = async (uid) => {
-  const savedRecipesSnapshot = await recipes.where('uid', '==', uid).get()
-  const savedRecipes = savedRecipesSnapshot.docs.map(doc => ({ ...doc.data() }))
+  const savedRecipesRef = await users.doc(uid).collection('savedRecipes').get()
+  const savedRecipes = savedRecipesRef.docs.map(doc => ({ ...doc.data() }))
   return savedRecipes
 }
 
-const findSavedRecipe = async (rid) => {
-  const savedRecipesSnapshot = await recipes.where('rid', '==', Number(rid)).get()
-  const savedRecipes = savedRecipesSnapshot.docs.map(doc => ({ ...doc.data() }))
-  return savedRecipes
+const findSavedRecipe = async (uid, rid) => {
+  const savedRecipeRef = await users.doc(uid).collection('savedRecipes').doc(String(rid)).get()
+  const savedRecipe = savedRecipeRef.data()
+  return savedRecipe
 }
 
-module.exports = { findFishRecipes, showRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe }
+const removeSavedRecipe = async (uid, rid) => {
+  await users.doc(uid).collection('savedRecipes').doc(String(rid)).delete()
+}
+
+module.exports = { findFishRecipes, showRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe, removeSavedRecipe }
