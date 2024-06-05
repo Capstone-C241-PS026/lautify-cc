@@ -2,6 +2,10 @@ const { auth } = require('../config/firebase')
 
 const verifyIdToken = async (req, res, next) => {
   try {
+    const nonSecurePaths = ['/'];
+
+    if (nonSecurePaths.includes(req.path)) return next()
+
     if (!req.headers.authorization) {
       throw new Error('Unauthorized')
     }

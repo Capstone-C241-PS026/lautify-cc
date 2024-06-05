@@ -21,7 +21,6 @@ router.get('/:uid', async (req, res) => {
   }
 })
 
-
 router.post('/', async (req, res) => {
   try {
     const userData = req.body
@@ -31,7 +30,6 @@ router.post('/', async (req, res) => {
     res.status(400).send({ message: error.message })
   }
 })
-
 
 router.put('/:uid', async (req, res) => {
   try {
