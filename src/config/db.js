@@ -1,5 +1,8 @@
-const { db } = require("../config/firebase")
+const { initializeAdmin } = require("./firebase-admin")
 
-const users = db.collection('users')
+async function db(name) {
+  const admin = await initializeAdmin()
+  return admin.firestore().collection(name)
+}
 
-module.exports = { users }
+module.exports = db 

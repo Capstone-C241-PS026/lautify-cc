@@ -1,24 +1,31 @@
-const { users } = require("../config/db")
-const { auth } = require("../config/firebase")
+
+const { adminAuth } = require("../config/auth")
+const db = require("../config/db")
+const { initializeAdmin } = require("../config/firebase-admin")
 
 const findAllUser = async () => {
-  const allUser = (await users.get()).docs.map(doc => doc.data())
+  const allUser = (await db("users").then(query => query.get())).docs.map(doc => doc.data())
   return allUser
 }
 
 const findUserById = async (uid) => {
-  const user = (await users.doc(uid).get()).data()
+  const user = (await db("users").then(query => query.doc(uid).get())).data()
+  return user
+}
+
+const findUserByEmail = async (email) => {
+  const user = (await db("users").then(query => query.where("email", "==", email).get())).docs.map(doc => doc.data())
   return user
 }
 
 const insertUser = async (userData) => {
-  users.doc(userData.uid).set(userData)
+  db("users").then(query => query.doc(userData.uid).set(userData))
 }
 
 const editUserById = async (uid, userData) => {
-  auth.updateUser(uid, { email: userData.email, displayName: userData.displayName })
-  response = await users.doc(uid).update(userData)
+  adminAuth().then(auth => auth.updateUser(uid, { email: userData.email, displayName: userData.displayName }))
+  response = await db("users").then(query => query.doc(uid).update(userData))
   return response
 }
 
-module.exports = { findAllUser, insertUser, findUserById, editUserById }
+module.exports = { findAllUser, insertUser, findUserById, editUserById, findUserByEmail }

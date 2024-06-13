@@ -1,4 +1,4 @@
-const { findAllUser, insertUser, findUserById, editUserById } = require('./user.repository')
+const { findAllUser, insertUser, findUserById, editUserById, findUserByEmail } = require('./user.repository')
 
 const getAllUser = async () => {
   const users = await findAllUser()
@@ -25,9 +25,25 @@ const createUser = async (userData) => {
   return { message: 'User created' }
 }
 
+const getUserByEmail = async (email) => {
+  const user = await findUserByEmail(email)
+  if (!user) {
+    throw Error('User not found')
+  }
+  return user
+}
+
 const updateUser = async (uid, userData) => {
-  await getUserById(uid)
   const { displayName, username, email } = userData
+  await getUserById(uid)
+
+  const user = await getUserByEmail(email)
+  if (user.length) {
+    if (user[0].uid !== uid) {
+      throw Error('Email already in use')
+    }
+  }
+
   if (!displayName || !username || !email) {
     throw Error('All fields must be filled')
   }

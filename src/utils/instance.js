@@ -1,10 +1,11 @@
 const axios = require("axios")
 require('dotenv').config()
+const getSecret = require('../config/secretManager')
 
-const recipeInstance = axios.create({
-  baseURL: process.env.RECIPE_BASE_URL,
+const recipeInstance = async () => axios.create({
+  baseURL: await getSecret("RECIPE_BASE_URL"),
   params: {
-    apiKey: process.env.RECIPE_API_KEY
+    apiKey: await getSecret("RECIPE_API_KEY"),
   }
 })
 

@@ -24,8 +24,9 @@ const getRecipesByQuery = async (query) => {
   return recipes
 }
 
-const saveRecipe = async (uid, recipeData) => {
+const saveRecipe = async (uid, rid) => {
   await getUserById(uid)
+  const recipeData = await showRecipeDetail(rid)
   await addSaveRecipe(uid, recipeData)
   return { message: 'Recipe saved' }
 }
@@ -46,7 +47,7 @@ const getSavedRecipeById = async (uid, rid) => {
 }
 
 const deleteSavedRecipe = async (uid, rid) => {
-  await getUserById(uid)
+  await getSavedRecipeById(uid, rid)
   await removeSavedRecipe(uid, rid)
   return { message: 'Recipe deleted' }
 }

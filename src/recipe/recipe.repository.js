@@ -1,4 +1,4 @@
-const { users } = require("../config/db")
+const db = require("../config/db")
 const { recipeInstance } = require("../utils/instance")
 const { textTranslation } = require("../utils/translate")
 
@@ -6,19 +6,18 @@ const findFishRecipes = async ({ recipeId, query }) => {
   const limit = 10
 
   if (recipeId) {
-    const { data: recipe } = await recipeInstance.get(`/recipes/${recipeId}/information`)
-    console.log(recipe)
+    const { data: recipe } = await recipeInstance().then(query => query.get(`/recipes/${recipeId}/information`))
     return recipe
   }
 
   const search = query ? `${await textTranslation(`ikan ${query}`, 'id', 'en')}` : 'fish'
-  const { data: recipes } = await recipeInstance.get(`/recipes/complexSearch`, {
+  const { data: recipes } = await recipeInstance().then(query => query.get(`/recipes/complexSearch`, {
     params: {
       query: search,
       number: limit,
       addRecipeInformation: true
     }
-  })
+  }))
 
   return recipes.results
 }
@@ -53,23 +52,23 @@ const showRecipeDetail = async (recipeId) => {
 }
 
 const addSaveRecipe = async (uid, recipeData) => {
-  await users.doc(uid).collection('savedRecipes').doc(String(recipeData.rid)).set(recipeData)
+  db('users').then(query => query.doc(uid).collection('savedRecipes').doc(String(recipeData.rid)).set(recipeData))
 }
 
 const findAllSavedRecipe = async (uid) => {
-  const savedRecipesRef = await users.doc(uid).collection('savedRecipes').get()
+  const savedRecipesRef = await db('users').then(query => query.doc(uid).collection('savedRecipes').get())
   const savedRecipes = savedRecipesRef.docs.map(doc => ({ ...doc.data() }))
   return savedRecipes
 }
 
 const findSavedRecipe = async (uid, rid) => {
-  const savedRecipeRef = await users.doc(uid).collection('savedRecipes').doc(String(rid)).get()
+  const savedRecipeRef = await db('users').then(query => query.doc(uid).collection('savedRecipes').doc(String(rid)).get())
   const savedRecipe = savedRecipeRef.data()
   return savedRecipe
 }
 
 const removeSavedRecipe = async (uid, rid) => {
-  await users.doc(uid).collection('savedRecipes').doc(String(rid)).delete()
+  db("users").then(query => query.doc(uid).collection('savedRecipes').doc(String(rid)).delete())
 }
 
 module.exports = { findFishRecipes, showRecipes, showRecipeDetail, addSaveRecipe, findAllSavedRecipe, findSavedRecipe, removeSavedRecipe }

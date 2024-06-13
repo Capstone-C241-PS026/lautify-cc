@@ -1,16 +1,12 @@
-const { auth } = require('../config/firebase')
+const { adminAuth } = require("../config/auth");
 
 const verifyIdToken = async (req, res, next) => {
   try {
-    const nonSecurePaths = ['/'];
-
-    if (nonSecurePaths.includes(req.path)) return next()
-
     if (!req.headers.authorization) {
       throw new Error('Unauthorized')
     }
     const idToken = req.headers.authorization.split('Bearer ')[1];
-    const decodedToken = await auth.verifyIdToken(idToken);
+    const decodedToken = await adminAuth().then(auth => auth.verifyIdToken(idToken))
     req['currentUser'] = decodedToken;
     next();
   } catch (error) {

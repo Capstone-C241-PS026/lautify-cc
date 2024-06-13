@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllRecipe, getRecipeById, getRecipesByQuery, saveRecipe, getAllRecipeSaved, getSavedRecipeById, deleteSavedRecipe } = require('./recipe.service');
+const { verifyIdToken } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
   try {
@@ -31,24 +32,23 @@ router.get('/fish/search', async (req, res) => {
   }
 })
 
-router.post('/save/:uid', async (req, res) => {
+router.post('/save/:uid/:rid', verifyIdToken, async (req, res) => {
   try {
-    const { uid } = req.params
-    const recipeData = req.body
+    const { uid, rid } = req.params
     const currentUser = req['currentUser']
 
     if (currentUser.uid !== uid) {
       throw Error('cannot use other user\'s recipe')
     }
 
-    const response = await saveRecipe(uid, recipeData)
+    const response = await saveRecipe(uid, rid)
     res.status(201).send(response)
   } catch (error) {
     res.status(400).send({ message: error.message })
   }
 })
 
-router.get('/save/:uid', async (req, res) => {
+router.get('/save/:uid', verifyIdToken, async (req, res) => {
   try {
     const { uid } = req.params
     const savedRecipes = await getAllRecipeSaved(uid)
@@ -58,7 +58,7 @@ router.get('/save/:uid', async (req, res) => {
   }
 })
 
-router.get('/save/:uid/:rid', async (req, res) => {
+router.get('/save/:uid/:rid', verifyIdToken, async (req, res) => {
   try {
     const { uid, rid } = req.params
     const recipe = await getSavedRecipeById(uid, rid)
@@ -68,7 +68,7 @@ router.get('/save/:uid/:rid', async (req, res) => {
   }
 })
 
-router.delete('/save/:uid/:rid', async (req, res) => {
+router.delete('/save/:uid/:rid', verifyIdToken, async (req, res) => {
   try {
     const { uid, rid } = req.params
     const currentUser = req['currentUser']
