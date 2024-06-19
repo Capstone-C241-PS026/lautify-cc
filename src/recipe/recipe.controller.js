@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllRecipe, getRecipeById, getRecipesByQuery, saveRecipe, getAllRecipeSaved, getSavedRecipeById, deleteSavedRecipe } = require('./recipe.service');
-const { verifyIdToken } = require('../middleware/auth');
+// const { verifyIdToken } = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
   try {
@@ -32,7 +32,7 @@ router.get('/fish/search', async (req, res) => {
   }
 })
 
-router.post('/save/:uid/:rid', verifyIdToken, async (req, res) => {
+router.post('/save/:uid/:rid', async (req, res) => {
   try {
     const { uid, rid } = req.params
     const currentUser = req['currentUser']
@@ -48,7 +48,7 @@ router.post('/save/:uid/:rid', verifyIdToken, async (req, res) => {
   }
 })
 
-router.get('/save/:uid', verifyIdToken, async (req, res) => {
+router.get('/save/:uid', async (req, res) => {
   try {
     const { uid } = req.params
     const savedRecipes = await getAllRecipeSaved(uid)
@@ -58,7 +58,7 @@ router.get('/save/:uid', verifyIdToken, async (req, res) => {
   }
 })
 
-router.get('/save/:uid/:rid', verifyIdToken, async (req, res) => {
+router.get('/save/:uid/:rid', async (req, res) => {
   try {
     const { uid, rid } = req.params
     const recipe = await getSavedRecipeById(uid, rid)
@@ -68,7 +68,7 @@ router.get('/save/:uid/:rid', verifyIdToken, async (req, res) => {
   }
 })
 
-router.delete('/save/:uid/:rid', verifyIdToken, async (req, res) => {
+router.delete('/save/:uid/:rid', async (req, res) => {
   try {
     const { uid, rid } = req.params
     const currentUser = req['currentUser']
