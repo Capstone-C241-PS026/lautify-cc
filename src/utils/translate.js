@@ -1,6 +1,6 @@
 const translateText = require('free-google-translator-api');
 
-const textTranslation = async (text, from = 'en', to = 'id') => {
+const textTranslation = async (text, from = 'en', to = 'en') => {
   try {
     const translatedText = await translateText(text, from, to);
     return translatedText;

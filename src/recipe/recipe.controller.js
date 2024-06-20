@@ -32,14 +32,14 @@ router.get('/fish/search', async (req, res) => {
   }
 })
 
-router.post('/save/:uid/:rid', async (req, res) => {
+router.get('/save/:uid/:rid', async (req, res) => {
   try {
     const { uid, rid } = req.params
-    const currentUser = req['currentUser']
 
-    if (currentUser.uid !== uid) {
-      throw Error('cannot use other user\'s recipe')
-    }
+    // const currentUser = req['currentUser']
+    // if (currentUser.uid !== uid) {
+    //   throw Error('cannot use other user\'s recipe')
+    // }
 
     const response = await saveRecipe(uid, rid)
     res.status(201).send(response)
@@ -71,12 +71,11 @@ router.get('/save/:uid/:rid', async (req, res) => {
 router.delete('/save/:uid/:rid', async (req, res) => {
   try {
     const { uid, rid } = req.params
-    const currentUser = req['currentUser']
+    // const currentUser = req['currentUser']
 
-    if (currentUser.uid !== uid) {
-      throw Error('cannot use other user\'s recipe')
-    }
-
+    // if (currentUser.uid !== uid) {
+    //   throw Error('cannot use other user\'s recipe')
+    // }
     const response = await deleteSavedRecipe(uid, rid)
     res.status(200).send(response)
   } catch (error) {
