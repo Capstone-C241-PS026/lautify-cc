@@ -24,4 +24,4 @@
 ### Technologies Used
 * [NodeJS](https://nodejs.org/) 
 * [ExpressJS](https://www.expresjs.org/) 
-* [Firebase](https://www.mongodb.com/)
+* [Firebase](https://firebase.google.com/?hl=id)
